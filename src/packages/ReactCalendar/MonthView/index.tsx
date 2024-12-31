@@ -10,14 +10,30 @@ interface MonthViewProps {
   dayRender?: (date: Date) => React.ReactNode;
   showFixedNumberOfWeeks: boolean;
   showNeighboringMonth: boolean;
+  monthView: 'week' | 'month';
+  enableSwiper: boolean;
+  setMonthView: (view: 'week' | 'month') => void;
 }
-function MonthView({ currentDate, activeDate, setActiveDate, weekStart = 0, dayRender, showFixedNumberOfWeeks, showNeighboringMonth }: MonthViewProps) {
+function MonthView({
+  currentDate,
+  activeDate,
+  setActiveDate,
+  weekStart = 0,
+  dayRender,
+  showFixedNumberOfWeeks,
+  showNeighboringMonth,
+  enableSwiper,
+  monthView,
+  setMonthView,
+}: MonthViewProps) {
   const monthStartDay = dayjs(activeDate || currentDate).startOf('month');
   const currentMonthIndex = monthStartDay.month();
-  const viewStartDay = monthStartDay.locale('en', { weekStart }).startOf('week').toDate();
-  const onDayClick = (date: Date) => {
-    setActiveDate(date);
-  };
+  const viewStartDay =
+    monthView === 'month'
+      ? monthStartDay.locale('en', { weekStart }).startOf('week').toDate()
+      : dayjs(activeDate || currentDate)
+          .startOf('week')
+          .toDate();
   // 拿当前日期获取该月第一天，再获取该周第一天
   return (
     <div className="react-calendar__month-view">
@@ -27,10 +43,13 @@ function MonthView({ currentDate, activeDate, setActiveDate, weekStart = 0, dayR
         viewStartDay={viewStartDay}
         currentDate={currentDate}
         currentMonthIndex={currentMonthIndex}
-        onDayClick={onDayClick}
+        onDayClick={(date: Date) => setActiveDate(date)}
         dayRender={dayRender}
         showFixedNumberOfWeeks={showFixedNumberOfWeeks}
         showNeighboringMonth={showNeighboringMonth}
+        monthView={monthView}
+        setMonthView={setMonthView}
+        enableSwiper={enableSwiper}
       />
     </div>
   );

@@ -5,7 +5,7 @@ function App() {
 
   return (
     <>
-      <ReactCalendar showFixedNumberOfWeeks={true} />
+      <ReactCalendar showFixedNumberOfWeeks={true} enableSwiper />
     </>
   )
 }

@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import Flex from '../Flex';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
+import { useSwipeable } from 'react-swipeable';
 
 interface DaysProps {
   activeDate: Date;
@@ -12,19 +13,45 @@ interface DaysProps {
   dayRender?: (date: Date) => React.ReactNode;
   showFixedNumberOfWeeks: boolean;
   showNeighboringMonth: boolean;
+  monthView: 'week' | 'month';
+  enableSwiper: boolean;
+  setMonthView: (monthView: 'week' | 'month') => void;
 }
 
 const baseClassName = 'react-calendar__month-view__day';
 
-function Days({ currentDate, activeDate, viewStartDay, currentMonthIndex, onDayClick, dayRender, showFixedNumberOfWeeks, showNeighboringMonth }: DaysProps) {
-  const rows = 6;
+function Days({
+  currentDate,
+  activeDate,
+  viewStartDay,
+  currentMonthIndex,
+  onDayClick,
+  dayRender,
+  showFixedNumberOfWeeks,
+  showNeighboringMonth,
+  monthView,
+  enableSwiper,
+  setMonthView,
+}: DaysProps) {
+  const rows = useMemo(() => (monthView === 'week' ? 1 : 6), [monthView]);
+  const handlers = useSwipeable({
+    onSwipedDown: () => {
+      setMonthView('month');
+    },
+    onSwipedUp: () => {
+      setMonthView('week');
+    },
+    trackMouse: enableSwiper,
+    trackTouch: enableSwiper,
+    delta: 20,
+  });
   const days = useMemo(() => {
     const list: React.ReactElement[] = [];
     for (let i = 0; i < rows * 7; i++) {
       const dayIns = dayjs(viewStartDay).add(i, 'day');
       const formatDay = dayjs(dayIns).format('YYYY-MM-DD');
       const day = dayIns.toDate();
-      const isCurrentDay = dayIns.isSame(dayjs(currentDate), 'day')
+      const isCurrentDay = dayIns.isSame(dayjs(currentDate), 'day');
       const classNames: string[] = [baseClassName];
       if (day.getMonth() !== currentMonthIndex) {
         if (showFixedNumberOfWeeks) {
@@ -64,10 +91,10 @@ function Days({ currentDate, activeDate, viewStartDay, currentMonthIndex, onDayC
       );
     }
     return list;
-  }, [viewStartDay, currentMonthIndex, currentDate, activeDate, dayRender, showFixedNumberOfWeeks, showNeighboringMonth, onDayClick]);
+  }, [viewStartDay, currentMonthIndex, currentDate, activeDate, dayRender, showFixedNumberOfWeeks, showNeighboringMonth, onDayClick, rows]);
 
   return (
-    <div className="react-calendar__month-view__days__wrapper">
+    <div {...handlers} className="react-calendar__month-view__days__wrapper">
       <Flex count={7} className="react-calendar__month-view__days" style={{ display: 'flex', flexWrap: 'wrap' }}>
         {days}
       </Flex>

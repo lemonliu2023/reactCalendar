@@ -8,14 +8,15 @@ interface NavigateProps {
   navigationPre?: React.ReactNode;
   navigationNext?: React.ReactNode;
   navigationCenter?: React.ReactNode;
+  monthView: 'week' | 'month';
 }
 
-function Navigation({ activeDate, setActiveDate, navigationPre, navigationNext, navigationCenter }: NavigateProps) {
+function Navigation({ activeDate, setActiveDate, navigationPre, navigationNext, navigationCenter, monthView }: NavigateProps) {
   const onPreClick = () => {
-    setActiveDate(dayjs(activeDate).subtract(1, 'month').toDate());
+    setActiveDate(dayjs(activeDate).subtract(1, monthView).toDate());
   };
   const onNextClick = () => {
-    setActiveDate(dayjs(activeDate).add(1, 'month').toDate());
+    setActiveDate(dayjs(activeDate).add(1, monthView).toDate());
   };
 
   const preRender = () => {
@@ -28,7 +29,7 @@ function Navigation({ activeDate, setActiveDate, navigationPre, navigationNext, 
     }
     return (
       <span className="react-calendar__navigation__arrow" onClick={onPreClick}>
-        {navigationPre === undefined ? 'pre' : navigationPre}
+        {navigationPre === undefined ? '<' : navigationPre}
       </span>
     );
   };
@@ -42,7 +43,7 @@ function Navigation({ activeDate, setActiveDate, navigationPre, navigationNext, 
     }
     return (
       <span className="react-calendar__navigation__arrow" onClick={onNextClick}>
-        {navigationNext === undefined ? 'next' : navigationNext}
+        {navigationNext === undefined ? '>' : navigationNext}
       </span>
     );
   };
