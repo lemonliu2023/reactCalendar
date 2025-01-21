@@ -1,3 +1,4 @@
+// @ts-nocheck
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import React from 'react';
@@ -29,7 +30,7 @@ function Navigation({ activeDate, setActiveDate, navigationPre, navigationNext, 
     }
     return (
       <span className="react-calendar__navigation__arrow" onClick={onPreClick}>
-        {navigationPre === undefined ? '<' : navigationPre}
+        {navigationPre === undefined ? 'pre' : navigationPre}
       </span>
     );
   };
@@ -43,7 +44,7 @@ function Navigation({ activeDate, setActiveDate, navigationPre, navigationNext, 
     }
     return (
       <span className="react-calendar__navigation__arrow" onClick={onNextClick}>
-        {navigationNext === undefined ? '>' : navigationNext}
+        {navigationNext === undefined ? 'next' : navigationNext}
       </span>
     );
   };
@@ -58,9 +59,9 @@ function Navigation({ activeDate, setActiveDate, navigationPre, navigationNext, 
   };
   return (
     <div className="react-calendar__navigation">
-      {preRender()}
+      {/* {preRender()} */}
       {centerRender()}
-      {nextRender()}
+      {/* {nextRender()} */}
     </div>
   );
 }

@@ -1,0 +1,43 @@
+.react-calendar__navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 6px;
+  line-height: 40px;
+}
+
+.react-calendar__navigation__label {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.react-calendar__month-view__weekdays {
+  position: relative;
+}
+
+.react-calendar__month-view__weekdays::after {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  bottom: 0;
+  border-bottom: 1px dashed #ddd;
+  content: '';
+}
+
+/* 周几 标题 */
+.react-calendar__month-view__weekdays__weekday {
+  text-align: center;
+  line-height: 40px;
+}
+
+.adm-swiper-slide {
+  opacity: 0.6;
+  transition: opacity ease-in 0.4s;
+}
+
+.adm-swiper-slide-active {
+  opacity: 1;
+  background-color: #fff;
+  z-index: 999;
+}

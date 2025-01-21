@@ -1,6 +1,8 @@
-import dayjs from 'dayjs';
-import Weekdays from './Weekdays';
-import Days from './Days';
+import WeekTitle from './WeekTitle';
+import { MonthViewType } from '..';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import FloatingPanelTop from '../../FloatingPanelTop';
+import Wrapper from './Wrapper';
 
 interface MonthViewProps {
   currentDate: Date;
@@ -10,47 +12,61 @@ interface MonthViewProps {
   dayRender?: (date: Date) => React.ReactNode;
   showFixedNumberOfWeeks: boolean;
   showNeighboringMonth: boolean;
-  monthView: 'week' | 'month';
+  monthView: MonthViewType;
   enableSwiper: boolean;
-  setMonthView: (view: 'week' | 'month') => void;
+  setMonthView: (view: MonthViewType) => void;
 }
-function MonthView({
-  currentDate,
-  activeDate,
-  setActiveDate,
-  weekStart = 0,
-  dayRender,
-  showFixedNumberOfWeeks,
-  showNeighboringMonth,
-  enableSwiper,
-  monthView,
-  setMonthView,
-}: MonthViewProps) {
-  const monthStartDay = dayjs(activeDate || currentDate).startOf('month');
-  const currentMonthIndex = monthStartDay.month();
-  const viewStartDay =
-    monthView === 'month'
-      ? monthStartDay.locale('en', { weekStart }).startOf('week').toDate()
-      : dayjs(activeDate || currentDate)
-          .startOf('week')
-          .toDate();
-  // 拿当前日期获取该月第一天，再获取该周第一天
+function MonthView({ currentDate, activeDate, setActiveDate, weekStart = 0, dayRender, monthView, setMonthView }: MonthViewProps) {
+  const [baseHeight, setBaseHeight] = useState(0);
+  const [barHeight, setBarHeight] = useState(0);
+  const [height, setHeight] = useState(0);
+  const heightRef = useRef(0);
+  useLayoutEffect(() => {
+    const dom = document.querySelector('.adm-swiper-item');
+    const bar = document.querySelector('.next-floating-panel-header');
+    const domHeight = dom?.clientHeight || 0;
+    const barHeight = bar?.clientHeight || 0;
+    heightRef.current = domHeight + barHeight;
+    setBaseHeight(domHeight);
+    setBarHeight(barHeight);
+    setHeight(heightRef.current);
+    console.log(domHeight, barHeight)
+  }, []);
+  const anchors = useMemo(() => {
+    if (baseHeight && barHeight) {
+      return [baseHeight + barHeight, baseHeight * 6 + barHeight];
+    } else {
+      return [];
+    }
+  }, [baseHeight, barHeight]);
+  const onHeightChangeHandler = useCallback(
+    (height: number) => {
+      if (height > baseHeight + barHeight + 1) {
+        setMonthView('month');
+      } else if (height < baseHeight + barHeight + 1) {
+        setMonthView('week');
+      }
+      setHeight(height);
+    },
+    [baseHeight, barHeight, setMonthView]
+  );
+
   return (
     <div className="react-calendar__month-view">
-      <Weekdays viewStartDay={viewStartDay} />
-      <Days
-        activeDate={activeDate}
-        viewStartDay={viewStartDay}
-        currentDate={currentDate}
-        currentMonthIndex={currentMonthIndex}
-        onDayClick={(date: Date) => setActiveDate(date)}
-        dayRender={dayRender}
-        showFixedNumberOfWeeks={showFixedNumberOfWeeks}
-        showNeighboringMonth={showNeighboringMonth}
-        monthView={monthView}
-        setMonthView={setMonthView}
-        enableSwiper={enableSwiper}
-      />
+      <WeekTitle weekStart={weekStart} />
+      <FloatingPanelTop anchors={anchors} onHeightChange={onHeightChangeHandler}>
+        <Wrapper
+          height={height}
+          baseHeight={baseHeight}
+          barHeight={barHeight}
+          currentDate={currentDate}
+          activeDate={activeDate}
+          setActiveDate={setActiveDate}
+          weekStart={weekStart}
+          monthView={monthView}
+          dayRender={dayRender}
+        />
+      </FloatingPanelTop>
     </div>
   );
 }
